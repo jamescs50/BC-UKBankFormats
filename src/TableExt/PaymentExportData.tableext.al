@@ -33,6 +33,10 @@ tableextension 70500 "Payment Export Data" extends "Payment Export Data"
             Caption = 'Local Instrument';
             DataClassification = CustomerContent;
         }
-
+        field(70509; International; Boolean)
+        {
+            Caption = 'International Payment';
+            DataClassification = CustomerContent;
+        }
     }
 }

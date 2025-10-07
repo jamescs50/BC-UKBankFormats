@@ -3,6 +3,8 @@ namespace kodoo.UKBanking;
 using Microsoft.Bank.Payment;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Sales.Customer;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Bank.DirectDebit;
 using Microsoft.HumanResources.Employee;
 using Microsoft.Purchases.Vendor;
 codeunit 70501 UKBank_PaymentBufferEvents
@@ -60,6 +62,20 @@ codeunit 70501 UKBank_PaymentBufferEvents
         PaymentExportData."Recipient Bank Acc. No." := BankAccount."Bank Account No.";
         PaymentExportData."Recipient IBAN" := BankAccount.IBAN;
     end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, codeunit::"SEPA CT-Fill Export Buffer", OnFillExportBufferOnBeforeInsertPaymentExportData, '', false, false)]
+    local procedure PaymentExportData_OnFillExportBufferOnBeforeInsertPaymentExportData(var PaymentExportData: Record "Payment Export Data"; var TempGenJnlLine: Record "Gen. Journal Line" temporary)
+    var
+        GenJnlBatch: Record "Gen. Journal Batch";
+    begin
+        if not GenJnlBatch.get(TempGenJnlLine."Journal Template Name", TempGenJnlLine."Journal Batch Name") then
+            GenJnlBatch.Init();
+        PaymentExportData.International := GenJnlBatch.International;
+        PaymentExportData."SEPA Batch Booking" := true;  //indicates that we want one entry on our 
+
+    end;
+
 
     var
         BankRules: Codeunit "Bank Export Rules";

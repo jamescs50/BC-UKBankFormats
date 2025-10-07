@@ -1,6 +1,7 @@
 namespace kodoo.UKBanking;
 
 using Microsoft.Bank.Setup;
+using Microsoft.Bank.DirectDebit;
 
 tableextension 70502 "Bank Export/Import Setup" extends "Bank Export/Import Setup"
 {
@@ -19,6 +20,12 @@ tableextension 70502 "Bank Export/Import Setup" extends "Bank Export/Import Setu
                     "UK Bank File Format"::HSBCcsv, "UK Bank File Format"::HSBCS18:
                         begin
                             Rec."Processing Codeunit ID" := Codeunit::"UK Text Export Formats";
+                        end;
+                    "UK Bank File Format"::HSBCSXML:
+                        begin
+                            rec."Processing Codeunit ID" := Codeunit::"SEPA CT-Export File";
+                            rec."Processing XMLport ID" := Xmlport::UKBanking_PAIN_001_001_03;
+                            rec."Check Export Codeunit" := Codeunit::"SEPA CT-Check Line";
                         end;
                 end;
             end;

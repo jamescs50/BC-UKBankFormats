@@ -12,6 +12,7 @@ codeunit 70502 UKBank_PaymentLineValidator
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"SEPA CT-Check Line", OnBeforeCheckCustVendEmpl, '', false, false)]
     local procedure SEPACTCheckLine_OnBeforeCheckCustVendEmpl(var GenJournalLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
     var
+        GenJnlBatch: Record "Gen. Journal Batch";
         Customer: Record Customer;
         CustomerBankAccount: Record "Customer Bank Account";
         Vendor: Record Vendor;
@@ -19,9 +20,12 @@ codeunit 70502 UKBank_PaymentLineValidator
         Employee: Record Employee;
         BankRules: Codeunit "Bank Export Rules";
         ErrorText: Text;
+        CountryErr: Label 'Country code must be specified on account %1', Comment = '%1';
     begin
         if BankRules.UKBankType(GenJournalLine) = "UK Bank File Format"::none then
             exit;
+        if not GenJnlBatch.get(GenJournalLine."Journal Template Name", GenJournalLine."Journal Batch Name") then
+            GenJnlBatch.Init();
 
         case GenJournalLine."Account Type" of
             GenJournalLine."Account Type"::Customer:
@@ -33,20 +37,24 @@ codeunit 70502 UKBank_PaymentLineValidator
 
                     if GenJournalLine."Recipient Bank Account" <> '' then begin
                         CustomerBankAccount.Get(Customer."No.", GenJournalLine."Recipient Bank Account");
-
-                        if CustomerBankAccount."Bank Branch No." = '' then
-                            AddFieldEmptyError(
-                              GenJournalLine, CustomerBankAccount.TableCaption(), CustomerBankAccount.FieldCaption("Bank Branch No."), GenJournalLine."Recipient Bank Account")
-                        else
-                            if not IsValidBankSortCode(CustomerBankAccount."Bank Branch No.", ErrorText) then
-                                GenJournalLine.InsertPaymentFileError(ErrorText);
-
-                        if CustomerBankAccount."Bank Account No." = '' then
-                            AddFieldEmptyError(
-                              GenJournalLine, CustomerBankAccount.TableCaption(), CustomerBankAccount.FieldCaption("Bank Account No."), GenJournalLine."Recipient Bank Account")
-                        else
-                            if not IsValidBankAccountNo(CustomerBankAccount."Bank Account No.", ErrorText) then
-                                GenJournalLine.InsertPaymentFileError(ErrorText);
+                        if not GenJnlBatch.International then begin
+                            if CustomerBankAccount."Bank Branch No." = '' then
+                                AddFieldEmptyError(
+                                GenJournalLine, CustomerBankAccount.TableCaption(), CustomerBankAccount.FieldCaption("Bank Branch No."), GenJournalLine."Recipient Bank Account")
+                            else
+                                if not IsValidBankSortCode(CustomerBankAccount."Bank Branch No.", ErrorText) then
+                                    GenJournalLine.InsertPaymentFileError(ErrorText);
+                            if CustomerBankAccount."Bank Account No." = '' then
+                                AddFieldEmptyError(
+                                  GenJournalLine, CustomerBankAccount.TableCaption(), CustomerBankAccount.FieldCaption("Bank Account No."), GenJournalLine."Recipient Bank Account")
+                            else begin
+                                if not IsValidBankAccountNo(CustomerBankAccount."Bank Account No.", ErrorText) then
+                                    GenJournalLine.InsertPaymentFileError(ErrorText);
+                                if BankRules.UKBankType(GenJournalLine) = "UK Bank File Format"::HSBCSXML then
+                                    if CustomerBankAccount."Country/Region Code" = '' then
+                                        GenJournalLine.InsertPaymentFileError(StrSubstNo(CountryErr, CustomerBankAccount.Code));
+                            end;
+                        end;
                     end;
                 end;
             GenJournalLine."Account Type"::Vendor:
@@ -56,22 +64,28 @@ codeunit 70502 UKBank_PaymentLineValidator
                     if Vendor.Name = '' then
                         AddFieldEmptyError(GenJournalLine, Vendor.TableCaption(), Vendor.FieldCaption(Name), GenJournalLine."Account No.");
 
-                    if GenJournalLine."Recipient Bank Account" <> '' then begin
-                        VendorBankAccount.Get(Vendor."No.", GenJournalLine."Recipient Bank Account");
-                        if VendorBankAccount.IBAN = '' then begin
-                            if VendorBankAccount."Bank Branch No." = '' then
-                                AddFieldEmptyError(
-                                GenJournalLine, VendorBankAccount.TableCaption(), VendorBankAccount.FieldCaption("Bank Branch No."), GenJournalLine."Recipient Bank Account")
-                            else
-                                if not IsValidBankSortCode(VendorBankAccount."Bank Branch No.", ErrorText) then
-                                    GenJournalLine.InsertPaymentFileError(ErrorText);
+                    if not GenJnlBatch.International then begin
+                        if GenJournalLine."Recipient Bank Account" <> '' then begin
+                            VendorBankAccount.Get(Vendor."No.", GenJournalLine."Recipient Bank Account");
+                            if VendorBankAccount.IBAN = '' then begin
+                                if VendorBankAccount."Bank Branch No." = '' then
+                                    AddFieldEmptyError(
+                                    GenJournalLine, VendorBankAccount.TableCaption(), VendorBankAccount.FieldCaption("Bank Branch No."), GenJournalLine."Recipient Bank Account")
+                                else
+                                    if not IsValidBankSortCode(VendorBankAccount."Bank Branch No.", ErrorText) then
+                                        GenJournalLine.InsertPaymentFileError(ErrorText);
 
-                            if VendorBankAccount."Bank Account No." = '' then
-                                AddFieldEmptyError(
-                                GenJournalLine, VendorBankAccount.TableCaption(), VendorBankAccount.FieldCaption("Bank Account No."), GenJournalLine."Recipient Bank Account")
-                            else
-                                if not IsValidBankAccountNo(VendorBankAccount."Bank Account No.", ErrorText) then
-                                    GenJournalLine.InsertPaymentFileError(ErrorText);
+                                if VendorBankAccount."Bank Account No." = '' then
+                                    AddFieldEmptyError(
+                                    GenJournalLine, VendorBankAccount.TableCaption(), VendorBankAccount.FieldCaption("Bank Account No."), GenJournalLine."Recipient Bank Account")
+                                else begin
+                                    if not IsValidBankAccountNo(VendorBankAccount."Bank Account No.", ErrorText) then
+                                        GenJournalLine.InsertPaymentFileError(ErrorText);
+                                    if BankRules.UKBankType(GenJournalLine) = "UK Bank File Format"::HSBCSXML then
+                                        if VendorBankAccount."Country/Region Code" = '' then
+                                            GenJournalLine.InsertPaymentFileError(StrSubstNo(CountryErr, VendorBankAccount.Code));
+                                end;
+                            end;
                         end;
                     end;
                 end;
@@ -81,26 +95,44 @@ codeunit 70502 UKBank_PaymentLineValidator
 
                     if Employee.FullName() = '' then
                         AddFieldEmptyError(GenJournalLine, Employee.TableCaption(), Employee.FieldCaption("First Name"), GenJournalLine."Account No.");
+                    if not GenJnlBatch.International then begin
+                        if GenJournalLine."Recipient Bank Account" <> '' then begin
+                            if Employee."Bank Branch No." = '' then
+                                AddFieldEmptyError(
+                                  GenJournalLine, Employee.TableCaption(), Employee.FieldCaption("Bank Branch No."), GenJournalLine."Recipient Bank Account")
+                            else
+                                if not IsValidBankSortCode(Employee."Bank Branch No.", ErrorText) then
+                                    GenJournalLine.InsertPaymentFileError(ErrorText);
 
-                    if GenJournalLine."Recipient Bank Account" <> '' then begin
-                        if Employee."Bank Branch No." = '' then
-                            AddFieldEmptyError(
-                              GenJournalLine, Employee.TableCaption(), Employee.FieldCaption("Bank Branch No."), GenJournalLine."Recipient Bank Account")
-                        else
-                            if not IsValidBankSortCode(Employee."Bank Branch No.", ErrorText) then
-                                GenJournalLine.InsertPaymentFileError(ErrorText);
-
-                        if Employee."Bank Account No." = '' then
-                            AddFieldEmptyError(
-                              GenJournalLine, Employee.TableCaption(), Employee.FieldCaption("Bank Account No."), GenJournalLine."Recipient Bank Account")
-                        else
-                            if not IsValidBankAccountNo(Employee."Bank Account No.", ErrorText) then
-                                GenJournalLine.InsertPaymentFileError(ErrorText);
+                            if Employee."Bank Account No." = '' then
+                                AddFieldEmptyError(
+                                  GenJournalLine, Employee.TableCaption(), Employee.FieldCaption("Bank Account No."), GenJournalLine."Recipient Bank Account")
+                            else begin
+                                if not IsValidBankAccountNo(Employee."Bank Account No.", ErrorText) then
+                                    GenJournalLine.InsertPaymentFileError(ErrorText);
+                                if BankRules.UKBankType(GenJournalLine) = "UK Bank File Format"::HSBCSXML then
+                                    if Employee."Country/Region Code" = '' then
+                                        GenJournalLine.InsertPaymentFileError(StrSubstNo(CountryErr, Employee."No."));
+                            end;
+                        end;
                     end;
                 end;
         end;
 
         IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"SEPA CT-Check Line", OnAfterCheckGenJnlLine, '', false, false)]
+    local procedure SEPACTCheckLine_OnAfterCheckGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
+    var
+        GenJnlBatch: Record "Gen. Journal Batch";
+        CurrencyPaymentErr: Label 'Currency payments can only be made in an international payments batch.';
+    begin
+        if GenJournalLine."Currency Code" = '' then
+            exit;
+        GenJnlBatch.Get(GenJournalLine."Journal Template Name", GenJournalLine."Journal Batch Name");
+        if not GenJnlBatch.International then
+            GenJournalLine.InsertPaymentFileError(CurrencyPaymentErr);
     end;
 
     local procedure AddFieldEmptyError(var GenJnlLine: Record "Gen. Journal Line"; TableCaption2: Text; FieldCaption: Text; KeyValue: Text)

@@ -136,7 +136,15 @@ xmlport 70500 UKBanking_PAIN_001_001_03
 
                     fieldelement(PmtInfId; PaymentExportDataGroup."Payment Information ID") { }
                     fieldelement(PmtMtd; PaymentExportDataGroup."SEPA Payment Method Text") { }
-                    fieldelement(BtchBookg; PaymentExportDataGroup."SEPA Batch Booking") { }
+                    fieldelement(BtchBookg; PaymentExportDataGroup."SEPA Batch Booking")
+                    {
+                        trigger OnBeforePassField()
+                        begin
+                            //true = single entry on bank statement for payment - defaults to true.
+                            if PaymentExportDataGroup."SEPA Batch Booking" then
+                                currXMLport.Skip();
+                        end;
+                    }
                     fieldelement(NbOfTxs; PaymentExportDataGroup."Line No.") { }
                     fieldelement(CtrlSum; PaymentExportDataGroup.Amount) { }
 
@@ -334,6 +342,36 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                             fieldelement(EndToEndId; paymentexportdata."End-to-End ID") { }
                         }
 
+                        textelement(CdtTrfTxInfPmtTpInf)
+                        {
+                            XmlName = 'PmtTpInf';
+
+                            textelement(CdtTrfTxInfPmtTpInfSvcLvl)
+                            {
+                                XmlName = 'SvcLvl';
+                                textelement(CdtTrfTxInfPmtTpInfSvcLvlCd)
+                                {
+                                    XmlName = 'Cd';
+
+                                }
+                                trigger OnBeforePassVariable()
+                                begin
+                                    CdtTrfTxInfPmtTpInfSvcLvlCd := BankRules.GetServiceLevelCode(PaymentExportDataGroup);
+                                    if CdtTrfTxInfPmtTpInfSvcLvlCd = '' then
+                                        currXMLport.Skip();
+                                end;
+                            }
+
+
+
+
+                            trigger OnBeforePassVariable()
+                            begin
+                                if BankRules.SuppressCdtTrfTxInfPmtTpInf() then
+                                    currXMLport.Skip();
+                            end;
+                        }
+
                         textelement(Amt)
                         {
                             fieldelement(InstdAmt; paymentexportdata.Amount)
@@ -358,156 +396,155 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     end;
                                 }
 
-                                textelement(ClrSysMmbId)
+                                textelement(cdtragtfininstnidPstlAdr)
                                 {
-                                    fieldelement(MmbId; paymentexportdata."Recipient Bank Branch No.") { }
-                                    trigger OnBeforePassVariable()
-                                    begin
-                                        if paymentexportdata."Recipient Bank Branch No." = '' then
-                                            currXMLport.Skip();
-                                    end;
-                                }
-                            }
-                        }
-
-                        textelement(Cdtr)
-                        {
-                            fieldelement(Nm; paymentexportdata."Recipient Name")
-                            {
-                                trigger OnBeforePassField()
-                                begin
-                                    paymentexportdata."Recipient Name" := Format(StrConvMgt.WindowsToASCII(paymentexportdata."Recipient Name"), -18);
-                                end;
-                            }
-
-                            textelement(cdtrpstladr)
-                            {
-                                XmlName = 'PstlAdr';
-
-                                fieldelement(StrtNm; paymentexportdata."Recipient Address")
-                                {
-
-                                    trigger OnBeforePassField()
-                                    begin
-                                        if paymentexportdata."Recipient Address" = '' then
-                                            currXMLport.Skip();
-                                    end;
-                                }
-
-                                fieldelement(PstCd; paymentexportdata."Recipient Post Code")
-                                {
-                                    trigger OnBeforePassField()
-                                    begin
-                                        if paymentexportdata."Recipient Post Code" = '' then
-                                            currXMLport.Skip();
-                                    end;
-                                }
-
-                                fieldelement(TwnNm; paymentexportdata."Recipient City")
-                                {
-
-                                    trigger OnBeforePassField()
-                                    begin
-                                        if paymentexportdata."Recipient City" = '' then
-                                            currXMLport.Skip();
-                                    end;
-                                }
-
-                                fieldelement(Ctry; paymentexportdata."Recipient Country/Region Code")
-                                {
-                                    trigger OnBeforePassField()
-                                    begin
-                                        if paymentexportdata."Recipient Country/Region Code" = '' then
-                                            currXMLport.Skip();
-                                    end;
-                                }
-
-                                trigger OnBeforePassVariable()
-                                begin
-                                    if (paymentexportdata."Recipient Address" = '') and
-                                       (paymentexportdata."Recipient Post Code" = '') and
-                                       (paymentexportdata."Recipient City" = '') and
-                                       (paymentexportdata."Recipient Country/Region Code" = '')
-                                    then
-                                        currXMLport.Skip();
-                                end;
-                            }
-                        }
-
-                        textelement(CdtrAcct)
-                        {
-                            textelement(cdtracctid)
-                            {
-                                XmlName = 'Id';
-
-                                fieldelement(IBAN; paymentexportdata."Recipient IBAN")
-                                {
-                                    FieldValidate = Yes;
-                                    MaxOccurs = Once;
-                                    MinOccurs = Zero;
-
-                                    trigger OnBeforePassField()
-                                    begin
-                                        if BankRules.SupressIBAN() then
-                                            currXMLport.Skip();
-                                    end;
-                                }
-
-                                textelement(Othr)
-                                {
-                                    fieldelement(cdtracctidcdtracctidId; paymentexportdata."Recipient Bank Acc. No.")
+                                    XmlName = 'PstlAdr';
+                                    fieldelement(cdtragtfininstnidPstlAdrCtry; paymentexportdata."Recipient Bank Country/Region")
                                     {
-                                        XmlName = 'Id';
+                                        XmlName = 'Ctry';
                                     }
+                                }
+                            }
+
+                            textelement(Cdtr)
+                            {
+                                fieldelement(Nm; paymentexportdata."Recipient Name")
+                                {
+                                    trigger OnBeforePassField()
+                                    begin
+                                        paymentexportdata."Recipient Name" := Format(StrConvMgt.WindowsToASCII(paymentexportdata."Recipient Name"), -18);
+                                    end;
+                                }
+
+                                textelement(cdtrpstladr)
+                                {
+                                    XmlName = 'PstlAdr';
+
+                                    fieldelement(StrtNm; paymentexportdata."Recipient Address")
+                                    {
+
+                                        trigger OnBeforePassField()
+                                        begin
+                                            if paymentexportdata."Recipient Address" = '' then
+                                                currXMLport.Skip();
+                                        end;
+                                    }
+
+                                    fieldelement(PstCd; paymentexportdata."Recipient Post Code")
+                                    {
+                                        trigger OnBeforePassField()
+                                        begin
+                                            if paymentexportdata."Recipient Post Code" = '' then
+                                                currXMLport.Skip();
+                                        end;
+                                    }
+
+                                    fieldelement(TwnNm; paymentexportdata."Recipient City")
+                                    {
+
+                                        trigger OnBeforePassField()
+                                        begin
+                                            if paymentexportdata."Recipient City" = '' then
+                                                currXMLport.Skip();
+                                        end;
+                                    }
+
+                                    fieldelement(Ctry; paymentexportdata."Recipient Country/Region Code")
+                                    {
+                                        trigger OnBeforePassField()
+                                        begin
+                                            if paymentexportdata."Recipient Country/Region Code" = '' then
+                                                currXMLport.Skip();
+                                        end;
+                                    }
+
                                     trigger OnBeforePassVariable()
                                     begin
-                                        if paymentexportdata."Recipient Bank Acc. No." = '' then
+                                        if (paymentexportdata."Recipient Address" = '') and
+                                           (paymentexportdata."Recipient Post Code" = '') and
+                                           (paymentexportdata."Recipient City" = '') and
+                                           (paymentexportdata."Recipient Country/Region Code" = '')
+                                        then
                                             currXMLport.Skip();
                                     end;
                                 }
                             }
-                        }
 
-                        textelement(RmtInf)
-                        {
-                            MinOccurs = Zero;
+                            textelement(CdtrAcct)
+                            {
+                                textelement(cdtracctid)
+                                {
+                                    XmlName = 'Id';
 
-                            textelement(Strd)
+                                    fieldelement(IBAN; paymentexportdata."Recipient IBAN")
+                                    {
+                                        FieldValidate = Yes;
+                                        MaxOccurs = Once;
+                                        MinOccurs = Zero;
+
+                                        trigger OnBeforePassField()
+                                        begin
+                                            if BankRules.SupressIBAN() then
+                                                currXMLport.Skip();
+                                        end;
+                                    }
+
+                                    textelement(Othr)
+                                    {
+                                        fieldelement(cdtracctidcdtracctidId; paymentexportdata."Recipient Bank Acc. No.")
+                                        {
+                                            XmlName = 'Id';
+                                        }
+                                        trigger OnBeforePassVariable()
+                                        begin
+                                            if paymentexportdata."Recipient Bank Acc. No." = '' then
+                                                currXMLport.Skip();
+                                        end;
+                                    }
+                                }
+                            }
+
+                            textelement(RmtInf)
                             {
                                 MinOccurs = Zero;
 
-                                textelement(CdtrRefInf)
+                                textelement(Strd)
                                 {
                                     MinOccurs = Zero;
 
-                                    textelement(Tp)
+                                    textelement(CdtrRefInf)
                                     {
                                         MinOccurs = Zero;
 
-                                        textelement(CdOrPrtry)
+                                        textelement(Tp)
                                         {
                                             MinOccurs = Zero;
 
-                                            textelement(remittancetext)
+                                            textelement(CdOrPrtry)
                                             {
-                                                XmlName = 'Prtry';
                                                 MinOccurs = Zero;
+
+                                                textelement(remittancetext)
+                                                {
+                                                    XmlName = 'Prtry';
+                                                    MinOccurs = Zero;
+                                                }
                                             }
                                         }
                                     }
                                 }
+
+                                trigger OnBeforePassVariable()
+                                begin
+                                    if paymentexportdata."Recipient Reference" <> '' then
+                                        remittancetext := Format(StrConvMgt.WindowsToASCII(paymentexportdata."Recipient Reference"), -18)
+                                    else
+                                        remittancetext := Format(StrConvMgt.WindowsToASCII(CompanyInformation.Name), -18);
+
+                                    if remittancetext = '' then
+                                        currXMLport.Skip();
+                                end;
                             }
-
-                            trigger OnBeforePassVariable()
-                            begin
-                                if paymentexportdata."Recipient Reference" <> '' then
-                                    remittancetext := Format(StrConvMgt.WindowsToASCII(paymentexportdata."Recipient Reference"), -18)
-                                else
-                                    remittancetext := Format(StrConvMgt.WindowsToASCII(CompanyInformation.Name), -18);
-
-                                if remittancetext = '' then
-                                    currXMLport.Skip();
-                            end;
                         }
                         trigger OnAfterGetRecord()
                         begin
@@ -528,6 +565,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
             }
         }
     }
+
 
     trigger OnPreXmlPort()
     begin

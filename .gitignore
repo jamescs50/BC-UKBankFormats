@@ -7,3 +7,4 @@
 *.g.xlf
 .vscode/*
 StandardXMLPort.al
+.alpackages/*

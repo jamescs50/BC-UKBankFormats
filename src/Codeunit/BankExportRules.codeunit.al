@@ -24,7 +24,7 @@ codeunit 70500 "Bank Export Rules"
 
     procedure SuppressChargeBearer(): Boolean
     begin
-        exit(BankFormat in [BankFormat::Lloyds, BankFormat::HSBCcsv]);
+        exit(BankFormat in [BankFormat::Lloyds, BankFormat::HSBCcsv, BankFormat::HSBCSXML]);
     end;
 
     procedure SupressIBAN(): Boolean
@@ -35,6 +35,11 @@ codeunit 70500 "Bank Export Rules"
     procedure SuppressLocalInstrument(): Boolean
     begin
         exit(BankFormat <> BankFormat::Lloyds);
+    end;
+
+    procedure SuppressCdtTrfTxInfPmtTpInf(): Boolean
+    begin
+        exit(BankFormat <> BankFormat::HSBCSXML);
     end;
 
     procedure GetdbtracctOthrId(paymentexportdatagroup: Record "Payment Export Data"): Text
@@ -52,8 +57,11 @@ codeunit 70500 "Bank Export Rules"
     procedure GetServiceLevelCode(paymentexportdatagroup: Record "Payment Export Data"): code[10]
     begin
         case BankFormat of
-            BankFormat::HSBCcsv:
-                exit('NURG') //Non-urgent payment
+            BankFormat::HSBCcsv, BankFormat::HSBCSXML:
+                if paymentexportdatagroup.International then
+                    exit('URGP')  //CHSPD / International
+                else
+                    exit('NURG') //Non-urgent payment
             else
                 exit('');
         end;
