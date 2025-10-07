@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+  <CstmrCdtTrfInitn>
+    <GrpHdr>
+      <MsgId>UNIQUE MESSAGE ID 35AN</MsgId>
+      <CreDtTm>2019-01-15T10:07:00</CreDtTm>
+      <NbOfTxs>2</NbOfTxs>
+      <CtrlSum>0.03</CtrlSum>
+      <InitgPty>
+        <Id>
+          <OrgId>
+            <Othr>
+              <Id>ABC12345678</Id>
+            </Othr>
+          </OrgId>
+        </Id>
+      </InitgPty>
+    </GrpHdr>
+    <PmtInf>
+      <PmtInfId>BATCH REFERENCE 18 AN</PmtInfId>
+      <PmtMtd>TRF</PmtMtd>
+      <PmtTpInf>
+        <SvcLvl>
+          <Cd>URNS</Cd>
+        </SvcLvl>
+      </PmtTpInf>
+      <ReqdExctnDt>2019-01-15</ReqdExctnDt>
+      <Dbtr>
+        <Nm>ORIGINATOR NAME 18 AN</Nm>
+        <PstlAdr>
+          <StrtNm>123 TEST ST</StrtNm>
+          <PstCd>SE1 9DZ</PstCd>
+          <TwnNm>LONDON</TwnNm>
+          <CtrySubDvsn>GREATER LONDON</CtrySubDvsn>
+          <Ctry>GB</Ctry>
+        </PstlAdr>
+      </Dbtr>
+      <DbtrAcct>
+        <Id>
+          <IBAN>GB79HBUK12345678912</IBAN>
+        </Id>
+      </DbtrAcct>
+      <DbtrAgt>
+        <FinInstnId>
+          <BIC>HBUKGB4B</BIC>
+          <PstlAdr>
+            <Ctry>GB</Ctry>
+          </PstlAdr>
+        </FinInstnId>
+      </DbtrAgt>
+      <ChrgBr>SHAR</ChrgBr>
+      <CdtTrfTxInf>
+        <PmtId>
+          <InstrId>UNIQUE PAYMENT ID</InstrId>
+          <EndToEndId>BENEFICIARY REFERENCE 18 AN</EndToEndId>
+        </PmtId>
+        <Amt>
+          <InstdAmt Ccy="GBP">0.01</InstdAmt>
+        </Amt>
+        <CdtrAgt>
+          <FinInstnId>
+            <ClrSysMmbId>
+              <MmbId>123456</MmbId>
+            </ClrSysMmbId>
+            <PstlAdr>
+              <Ctry>GB</Ctry>
+            </PstlAdr>
+          </FinInstnId>
+        </CdtrAgt>
+        <Cdtr>
+          <Nm>BENEFICIARY NAME 18 AN</Nm>
+          <PstlAdr>
+            <StrtNm>123 TEST ST</StrtNm>
+            <PstCd>SE1 9DZ</PstCd>
+            <TwnNm>LONDON</TwnNm>
+            <CtrySubDvsn>GREATER LONDON</CtrySubDvsn>
+            <Ctry>GB</Ctry>
+          </PstlAdr>
+        </Cdtr>
+        <CdtrAcct>
+          <Id>
+            <Othr>
+              <Id>12345678</Id>
+            </Othr>
+          </Id>
+        </CdtrAcct>
+      </CdtTrfTxInf>
+      <CdtTrfTxInf>
+        <PmtId>
+          <InstrId>UNIQUE PAYMENT ID</InstrId>
+          <EndToEndId>BENEFICIARY REFERENCE 18 AN</EndToEndId>
+        </PmtId>
+        <Amt>
+          <InstdAmt Ccy="GBP">0.02</InstdAmt>
+        </Amt>
+        <CdtrAgt>
+          <FinInstnId>
+            <ClrSysMmbId>
+              <MmbId>123456</MmbId>
+            </ClrSysMmbId>
+            <PstlAdr>
+              <Ctry>GB</Ctry>
+            </PstlAdr>
+          </FinInstnId>
+        </CdtrAgt>
+        <Cdtr>
+          <Nm>BENEFICIARY NAME 18 AN</Nm>
+          <PstlAdr>
+            <StrtNm>123 TEST ST</StrtNm>
+            <PstCd>SE1 9DZ</PstCd>
+            <TwnNm>LONDON</TwnNm>
+            <Ctry>GB</Ctry>
+          </PstlAdr>
+        </Cdtr>
+        <CdtrAcct>
+          <Id>
+            <Othr>
+              <Id>12345678</Id>
+            </Othr>
+          </Id>
+        </CdtrAcct>
+      </CdtTrfTxInf>
+    </PmtInf>
+  </CstmrCdtTrfInitn>
+</Document>

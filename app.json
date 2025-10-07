@@ -1,0 +1,30 @@
+{
+  "id": "8df46e56-eb0a-459c-af3a-a44f977e00b8",
+  "name": "UK Bank Payment Formats",
+  "publisher": "Kodoo",
+  "version": "26.4.0.2",
+  "privacyStatement": "https://github.com/jamescs50/BC-UKBankFormats",
+  "EULA": "https://github.com/jamescs50/BC-UKBankFormats/LICENSE",
+  "help": "https://github.com/jamescs50/BC-UKBankFormats",
+  "url": "https://github.com/jamescs50/BC-UKBankFormats",
+  "logo": "res/KodooHead.png",
+  "dependencies": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 70500,
+      "to": 70509
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
+  },
+  "runtime": "15.0",
+  "features": [
+    "NoImplicitWith"
+  ],
+  "target": "Cloud"
+}

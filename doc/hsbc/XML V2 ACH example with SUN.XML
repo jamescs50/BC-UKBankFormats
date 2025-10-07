@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.02">
+  <pain.001.001.02>
+    <GrpHdr>
+      <MsgId>Unique message ID 35 char max i</MsgId>
+      <CreDtTm>2009-09-09T16:54:48</CreDtTm>
+      <NbOfTxs>1</NbOfTxs>
+      <CtrlSum>7128.00</CtrlSum>
+      <Grpg>MIXD</Grpg>
+      <InitgPty>
+        <Id>
+          <OrgId>
+            <BkPtyId>ABC12345678</BkPtyId>
+          </OrgId>
+        </Id>
+      </InitgPty>
+    </GrpHdr>
+    <PmtInf>
+      <PmtInfId>Or ref 18 char max</PmtInfId>
+      <PmtMtd>TRF</PmtMtd>
+      <PmtTpInf>
+        <ClrChanl>MPNS</ClrChanl>
+      </PmtTpInf>
+      <ReqdExctnDt>2009-09-15</ReqdExctnDt>
+      <Dbtr>
+        <Nm>Or name 18 chr max</Nm>
+        <Id>
+          <OrgId>
+            <PrtryId>
+              <Id>BACSID</Id>
+            </PrtryId>
+          </OrgId>
+        </Id>
+      </Dbtr>
+      <DbtrAcct>
+        <Id>
+          <PrtryAcct>
+            <Id>12345678</Id>
+          </PrtryAcct>
+        </Id>
+      </DbtrAcct>
+      <DbtrAgt>
+        <FinInstnId>
+          <CmbndId>
+            <ClrSysMmbId>
+              <Id>XXXXX401234</Id>
+            </ClrSysMmbId>
+            <PstlAdr>
+              <Ctry>GB</Ctry>
+            </PstlAdr>
+          </CmbndId>
+        </FinInstnId>
+      </DbtrAgt>
+      <CdtTrfTxInf>
+        <PmtId>
+          <EndToEndId>Ben ref 18 chr max</EndToEndId>
+        </PmtId>
+        <Amt>
+          <InstdAmt Ccy="GBP">7128</InstdAmt>
+        </Amt>
+        <CdtrAgt>
+          <FinInstnId>
+            <CmbndId>
+              <ClrSysMmbId>
+                <Id>XXXXX123456</Id>
+              </ClrSysMmbId>
+              <PstlAdr>
+                <Ctry>GB</Ctry>
+              </PstlAdr>
+            </CmbndId>
+          </FinInstnId>
+        </CdtrAgt>
+        <Cdtr>
+          <Nm>Ben name 18chr max</Nm>
+        </Cdtr>
+        <CdtrAcct>
+          <Id>
+            <PrtryAcct>
+              <Id>12345678</Id>
+            </PrtryAcct>
+          </Id>
+        </CdtrAcct>
+      </CdtTrfTxInf>
+    </PmtInf>
+  </pain.001.001.02>
+</Document>

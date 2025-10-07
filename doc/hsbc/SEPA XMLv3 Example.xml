@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+  <CstmrCdtTrfInitn>
+    <GrpHdr>
+      <MsgId>UNIQUE FILE ID 35AN</MsgId>
+      <CreDtTm>2019-01-15T01:05:00</CreDtTm>
+      <NbOfTxs>2</NbOfTxs>
+      <InitgPty>
+        <Id>
+          <OrgId>
+            <Othr>
+              <Id>ABC12345001</Id>
+            </Othr>
+          </OrgId>
+        </Id>
+      </InitgPty>
+    </GrpHdr>
+    <PmtInf>
+      <PmtInfId>BATCH REFERENCE</PmtInfId>
+      <PmtMtd>TRF</PmtMtd>
+      <PmtTpInf>
+        <SvcLvl>
+          <Cd>SEPA</Cd>
+        </SvcLvl>
+      </PmtTpInf>
+      <ReqdExctnDt>2019-01-16</ReqdExctnDt>
+      <Dbtr>
+        <Nm>DEBTOR NAME 35AN</Nm>
+        <PstlAdr>
+          <StrtNm>123 ABC ROAD</StrtNm>
+          <PstCd>123456</PstCd>
+          <TwnNm>Town Name</TwnNm>
+          <CtrySubDvsn>County</CtrySubDvsn>
+          <Ctry>DE</Ctry>
+        </PstlAdr>
+      </Dbtr>
+      <DbtrAcct>
+        <Id>
+          <IBAN>DE123456789123456789</IBAN>
+        </Id>
+      </DbtrAcct>
+      <DbtrAgt>
+        <FinInstnId>
+          <BIC>TUBDDEDD</BIC>
+          <PstlAdr>
+            <Ctry>DE</Ctry>
+          </PstlAdr>
+        </FinInstnId>
+      </DbtrAgt>
+      <ChrgBr>SLEV</ChrgBr>
+      <CdtTrfTxInf>
+        <PmtId>
+          <InstrId>UNIQUE PAYMENT ID</InstrId>
+          <EndToEndId>BENEF REFERENCE 35AN</EndToEndId>
+        </PmtId>
+        <Amt>
+          <InstdAmt Ccy="EUR">0.01</InstdAmt>
+        </Amt>
+        <CdtrAgt>
+          <FinInstnId>
+            <BIC>HSBCCHZZ</BIC>
+            <PstlAdr>
+              <Ctry>CH</Ctry>
+            </PstlAdr>
+          </FinInstnId>
+        </CdtrAgt>
+        <Cdtr>
+          <Nm>BENEFICIARY NAME 35AN</Nm>
+          <PstlAdr>
+            <StrtNm>123 ABC ROAD</StrtNm>
+            <PstCd>123456</PstCd>
+            <TwnNm>Town Name</TwnNm>
+            <CtrySubDvsn>County</CtrySubDvsn>
+            <Ctry>CH</Ctry>
+          </PstlAdr>
+        </Cdtr>
+        <CdtrAcct>
+          <Id>
+            <IBAN>CH1234456789012345667</IBAN>
+          </Id>
+        </CdtrAcct>
+        <RmtInf>
+          <Ustrd>OPTIONAL TAG - ADDITIONAL REF FOR BENEF IF THE 35 CHARACTER END TO END ID IS TOO SHORT </Ustrd>
+        </RmtInf>
+      </CdtTrfTxInf>
+      <CdtTrfTxInf>
+        <PmtId>
+          <InstrId>UNIQUE PAYMENT ID</InstrId>
+          <EndToEndId>REFERENCE FOR BENEFICIARY 35AN</EndToEndId>
+        </PmtId>
+        <Amt>
+          <InstdAmt Ccy="EUR">0.01</InstdAmt>
+        </Amt>
+        <CdtrAgt>
+          <FinInstnId>
+            <BIC>HSBCCHZZ</BIC>
+            <PstlAdr>
+              <Ctry>CH</Ctry>
+            </PstlAdr>
+          </FinInstnId>
+        </CdtrAgt>
+        <Cdtr>
+          <Nm>BENEFICIARY NAME 35AN</Nm>
+          <PstlAdr>
+            <StrtNm>123 ABC ROAD</StrtNm>
+            <PstCd>123456</PstCd>
+            <TwnNm>Town Name</TwnNm>
+            <CtrySubDvsn>County</CtrySubDvsn>
+            <Ctry>CH</Ctry>
+          </PstlAdr>
+        </Cdtr>
+        <CdtrAcct>
+          <Id>
+            <IBAN>CH1234456789012345667</IBAN>
+          </Id>
+        </CdtrAcct>
+        <RmtInf>
+          <Ustrd>OPTIONAL TAG - ADDITIONAL REF FOR BENEF IF THE 35 CHARACTER END TO END ID IS TOO SHORT </Ustrd>
+        </RmtInf>
+      </CdtTrfTxInf>
+    </PmtInf>
+  </CstmrCdtTrfInitn>
+</Document>

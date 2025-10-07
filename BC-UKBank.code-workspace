@@ -1,0 +1,18 @@
+{
+    "folders":[
+        {
+            "path": "."
+        }        
+    ],
+    "settings": {
+        "al.enableCodeActions": true,
+        "al.enableCodeAnalysis": true,
+        "al.codeAnalyzers": [
+            "${CodeCop}",
+            "${UICop}",
+            "${PerTenantExtensionCop}",
+            "${AppSourceCop}"
+        ],
+        "al.ruleSetPath": "./.codeAnalysis/kodoo.ruleset.json"
+    }
+}

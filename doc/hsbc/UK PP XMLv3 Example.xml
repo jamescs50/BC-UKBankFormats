@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+  <CstmrCdtTrfInitn>
+    <GrpHdr>
+      <MsgId>UNIQUE MESSAGE ID 35 AN</MsgId>
+      <CreDtTm>2019-01-15T10:07:00</CreDtTm>
+      <NbOfTxs>2</NbOfTxs>
+      <InitgPty>
+        <Id>
+          <OrgId>
+            <Othr>
+              <Id>ABC12345001</Id>
+            </Othr>
+          </OrgId>
+        </Id>
+      </InitgPty>
+    </GrpHdr>
+    <PmtInf>
+      <PmtInfId>ORIGINATOR REFERENCE 16AN</PmtInfId>
+      <PmtMtd>TRF</PmtMtd>
+      <PmtTpInf>
+        <SvcLvl>
+          <Cd>URGP</Cd>
+        </SvcLvl>
+      </PmtTpInf>
+      <ReqdExctnDt>2019-01-15</ReqdExctnDt>
+      <Dbtr>
+        <Nm>DEBTOR NAME 35AN</Nm>
+        <PstlAdr>
+          <StrtNm>123 TEST ST</StrtNm>
+          <PstCd>SE1 9DZ</PstCd>
+          <TwnNm>LONDON</TwnNm>
+          <Ctry>GB</Ctry>
+        </PstlAdr>
+      </Dbtr>
+      <DbtrAcct>
+        <Id>
+          <IBAN>GB94HBUK40123487654321</IBAN>
+        </Id>
+      </DbtrAcct>
+      <DbtrAgt>
+        <FinInstnId>
+          <BIC>HBUKGB4B</BIC>
+          <PstlAdr>
+            <Ctry>GB</Ctry>
+          </PstlAdr>
+        </FinInstnId>
+      </DbtrAgt>
+      <ChrgBr>SHAR</ChrgBr>
+      <CdtTrfTxInf>
+        <PmtId>
+          <InstrId>UNIQUTE PAYMENT ID </InstrId>
+          <EndToEndId>UNIQUE BENEFICIARY REFERENCE</EndToEndId>
+        </PmtId>
+        <Amt>
+          <InstdAmt Ccy="USD">0.01</InstdAmt>
+        </Amt>
+        <CdtrAgt>
+          <FinInstnId>
+            <BIC>BOFAUS33</BIC>
+            <PstlAdr>
+              <Ctry>US</Ctry>
+            </PstlAdr>
+          </FinInstnId>
+        </CdtrAgt>
+        <Cdtr>
+          <Nm>CREDITOR NAME 35AN</Nm>
+          <PstlAdr>
+            <StrtNm>123 TEST ST</StrtNm>
+            <PstCd>12345</PstCd>
+            <TwnNm>ORLANDO</TwnNm>
+            <CtrySubDvsn>FLORIDA</CtrySubDvsn>
+            <Ctry>US</Ctry>
+          </PstlAdr>
+        </Cdtr>
+        <CdtrAcct>
+          <Id>
+            <Othr>
+              <Id>123456789</Id>
+            </Othr>
+          </Id>
+        </CdtrAcct>
+        <RmtInf>
+          <Ustrd>REMITANCE INFORMATION FOR THE BENEFICIARY 105AN</Ustrd>
+        </RmtInf>
+      </CdtTrfTxInf>
+      <CdtTrfTxInf>
+        <PmtId>
+          <InstrId>UNIQUE PAYMENT ID</InstrId>
+          <EndToEndId>UNIQUE BENEFICIARY REFERENCE</EndToEndId>
+        </PmtId>
+        <Amt>
+          <InstdAmt Ccy="EUR">0.01</InstdAmt>
+        </Amt>
+        <CdtrAgt>
+          <FinInstnId>
+            <BIC>CCFRFRPP</BIC>
+            <PstlAdr>
+              <Ctry>FR</Ctry>
+            </PstlAdr>
+          </FinInstnId>
+        </CdtrAgt>
+        <Cdtr>
+          <Nm>CREDITOR NAME 35AN</Nm>
+          <PstlAdr>
+            <StrtNm>123 TEST AVE</StrtNm>
+            <TwnNm>PARIS</TwnNm>
+            <Ctry>FR</Ctry>
+          </PstlAdr>
+        </Cdtr>
+        <CdtrAcct>
+          <Id>
+            <IBAN>FR123456789456123</IBAN>
+          </Id>
+        </CdtrAcct>
+        <RmtInf>
+          <Ustrd>REMITANCE INFORMATION FOR THE BENEFICIARY 105AN</Ustrd>
+        </RmtInf>
+      </CdtTrfTxInf>
+    </PmtInf>
+  </CstmrCdtTrfInitn>
+</Document>
