@@ -8,9 +8,10 @@ pageextension 70501 "General Journal Batches" extends "General Journal Batches"
     {
         addlast(Control1)
         {
-            field(International; Rec.International)
+            field("Service Level"; Rec."Service Level")
             {
-                ApplicationArea = all;
+                ApplicationArea = All;
+                Visible = false;
             }
         }
     }

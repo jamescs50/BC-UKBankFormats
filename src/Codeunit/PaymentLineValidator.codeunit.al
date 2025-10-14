@@ -37,7 +37,7 @@ codeunit 70502 UKBank_PaymentLineValidator
 
                     if GenJournalLine."Recipient Bank Account" <> '' then begin
                         CustomerBankAccount.Get(Customer."No.", GenJournalLine."Recipient Bank Account");
-                        if not GenJnlBatch.International then begin
+                        if GenJnlBatch."Service Level" = "Payment Service Level"::NURG then begin
                             if CustomerBankAccount."Bank Branch No." = '' then
                                 AddFieldEmptyError(
                                 GenJournalLine, CustomerBankAccount.TableCaption(), CustomerBankAccount.FieldCaption("Bank Branch No."), GenJournalLine."Recipient Bank Account")
@@ -64,7 +64,7 @@ codeunit 70502 UKBank_PaymentLineValidator
                     if Vendor.Name = '' then
                         AddFieldEmptyError(GenJournalLine, Vendor.TableCaption(), Vendor.FieldCaption(Name), GenJournalLine."Account No.");
 
-                    if not GenJnlBatch.International then begin
+                    if GenJnlBatch."Service Level" = "Payment Service Level"::NURG then begin
                         if GenJournalLine."Recipient Bank Account" <> '' then begin
                             VendorBankAccount.Get(Vendor."No.", GenJournalLine."Recipient Bank Account");
                             if VendorBankAccount.IBAN = '' then begin
@@ -95,7 +95,7 @@ codeunit 70502 UKBank_PaymentLineValidator
 
                     if Employee.FullName() = '' then
                         AddFieldEmptyError(GenJournalLine, Employee.TableCaption(), Employee.FieldCaption("First Name"), GenJournalLine."Account No.");
-                    if not GenJnlBatch.International then begin
+                    if GenJnlBatch."Service Level" = "Payment Service Level"::NURG then begin
                         if GenJournalLine."Recipient Bank Account" <> '' then begin
                             if Employee."Bank Branch No." = '' then
                                 AddFieldEmptyError(
@@ -131,7 +131,7 @@ codeunit 70502 UKBank_PaymentLineValidator
         if GenJournalLine."Currency Code" = '' then
             exit;
         GenJnlBatch.Get(GenJournalLine."Journal Template Name", GenJournalLine."Journal Batch Name");
-        if not GenJnlBatch.International then
+        if GenJnlBatch."Service Level" = "Payment Service Level"::NURG then
             GenJournalLine.InsertPaymentFileError(CurrencyPaymentErr);
     end;
 

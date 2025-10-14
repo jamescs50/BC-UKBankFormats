@@ -57,13 +57,10 @@ codeunit 70500 "Bank Export Rules"
     procedure GetServiceLevelCode(paymentexportdatagroup: Record "Payment Export Data"): code[10]
     begin
         case BankFormat of
-            BankFormat::HSBCcsv, BankFormat::HSBCSXML:
-                if paymentexportdatagroup.International then
-                    exit('URGP')  //CHSPD / International
-                else
-                    exit('NURG') //Non-urgent payment
+            BankFormat::Lloyds, BankFormat::HSBCSXML:
+                exit(Format(paymentexportdatagroup."Service Level"));
             else
-                exit('');
+                exit('NURG');
         end;
     end;
 

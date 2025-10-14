@@ -33,9 +33,10 @@ tableextension 70500 "Payment Export Data" extends "Payment Export Data"
             Caption = 'Local Instrument';
             DataClassification = CustomerContent;
         }
-        field(70509; International; Boolean)
+        field(70509; "Service Level"; Enum "Payment Service Level")
         {
-            Caption = 'International Payment';
+            Caption = 'Service Level';
+            ToolTip = 'NURG = UK domestic payments, SEPA for Euro payments to SEPA area, URGP for other payments.';
             DataClassification = CustomerContent;
         }
     }

@@ -71,7 +71,7 @@ codeunit 70501 UKBank_PaymentBufferEvents
     begin
         if not GenJnlBatch.get(TempGenJnlLine."Journal Template Name", TempGenJnlLine."Journal Batch Name") then
             GenJnlBatch.Init();
-        PaymentExportData.International := GenJnlBatch.International;
+        PaymentExportData."Service Level" := GenJnlBatch."Service Level";
         PaymentExportData."SEPA Batch Booking" := true;  //indicates that we want one entry on our 
 
     end;
