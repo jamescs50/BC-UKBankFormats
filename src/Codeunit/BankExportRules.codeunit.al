@@ -12,7 +12,6 @@ codeunit 70500 "Bank Export Rules"
     procedure SetExportFormat(var GenJnlLine: Record "Gen. Journal Line")
     var
         GenJnlLine2: Record "Gen. Journal Line";
-        BankAccount: Record "Bank Account";
         BankExpImpSetup: Record "Bank Export/Import Setup";
     begin
         GenJnlLine2.CopyFilters(GenJnlLine);
@@ -35,6 +34,17 @@ codeunit 70500 "Bank Export Rules"
     procedure SuppressLocalInstrument(): Boolean
     begin
         exit(BankFormat <> BankFormat::Lloyds);
+    end;
+
+    procedure OrganisationID(): Text[20]
+    var
+        CompanyInfo: Record "Company Information";
+    begin
+        if BankAccount."Organisation ID" = '' then begin
+            CompanyInfo.get();
+            exit(CompanyInfo."VAT Registration No.");
+        end else
+            exit(BankAccount."Organisation ID");
     end;
 
     procedure SuppressCdtTrfTxInfPmtTpInf(): Boolean
@@ -104,25 +114,25 @@ codeunit 70500 "Bank Export Rules"
     #region UKBankType
     procedure UKBankType(GenJnlLine: Record "Gen. Journal Line"): Enum "UK Bank File Format"
     var
-        BankAccount: Record "Bank Account";
+        NewBankAccount: Record "Bank Account";
     begin
-        BankAccount.Get(GenJnlLine."Bal. Account No.");
-        exit(UKBankType(BankAccount));
+        NewBankAccount.Get(GenJnlLine."Bal. Account No.");
+        exit(UKBankType(NewBankAccount));
     end;
 
     procedure UKBankType(PaymentExportData: Record "Payment Export Data"): Enum "UK Bank File Format"
     var
-        BankAccount: Record "Bank Account";
+        NewBankAccount: Record "Bank Account";
     begin
-        BankAccount.Get(PaymentExportData."Sender Bank Account Code");
-        exit(UKBankType(BankAccount));
+        NewBankAccount.Get(PaymentExportData."Sender Bank Account Code");
+        exit(UKBankType(NewBankAccount));
     end;
 
-    procedure UKBankType(BankAccount: Record "Bank Account"): Enum "UK Bank File Format"
+    procedure UKBankType(NewBankAccount: Record "Bank Account"): Enum "UK Bank File Format"
     var
         BankExpImpSetup: Record "Bank Export/Import Setup";
     begin
-        BankExpImpSetup.Get(BankAccount."Payment Export Format");
+        BankExpImpSetup.Get(NewBankAccount."Payment Export Format");
         exit(BankExpImpSetup."UK Bank File Format");
     end;
     #endregion
@@ -130,6 +140,7 @@ codeunit 70500 "Bank Export Rules"
 
 
     var
+        BankAccount: Record "Bank Account";
         BankFormat: Enum "UK Bank File Format";
 
     [IntegrationEvent(true, false)]

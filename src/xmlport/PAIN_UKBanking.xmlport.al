@@ -118,7 +118,14 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                 textelement(initgptyothrinitgpty)
                                 {
                                     XmlName = 'Othr';
-                                    fieldelement(Id; CompanyInformation."VAT Registration No.") { }
+                                    textelement(GrpHdrInitgPtyIdOrgIdOthrId)
+                                    {
+                                        XmlName = 'Id';
+                                        trigger OnBeforePassVariable()
+                                        begin
+                                            GrpHdrInitgPtyIdOrgIdOthrId := BankRules.OrganisationID();
+                                        end;
+                                    }
                                 }
                             }
                         }
