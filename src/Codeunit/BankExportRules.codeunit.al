@@ -57,7 +57,7 @@ codeunit 70500 "Bank Export Rules"
         case BankFormat of
             BankFormat::Lloyds:
                 exit(StrSubstNo('%1-%2', paymentexportdatagroup."Sender Bank Branch No.", paymentexportdatagroup."Sender Bank Account No."));
-            BankFormat::HSBCcsv:
+            BankFormat::HSBCcsv, BankFormat::HSBCSXML:
                 exit(paymentexportdatagroup."Sender Bank Account No.");
             else
                 exit('');

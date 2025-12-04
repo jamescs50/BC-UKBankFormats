@@ -126,9 +126,13 @@ codeunit 70502 UKBank_PaymentLineValidator
     local procedure SEPACTCheckLine_OnAfterCheckGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
     var
         GenJnlBatch: Record "Gen. Journal Batch";
+        BankRules: Codeunit "Bank Export Rules";
         CurrencyPaymentErr: Label 'Currency payments can only be made in an international payments batch.';
     begin
-        if GenJournalLine."Currency Code" = '' then
+        if BankRules.UKBankType(GenJournalLine) = "UK Bank File Format"::none then
+            exit;
+
+        if GenJournalLine."Currency Code" in ['', 'GBP'] then
             exit;
         GenJnlBatch.Get(GenJournalLine."Journal Template Name", GenJournalLine."Journal Batch Name");
         if GenJnlBatch."Service Level" = "Payment Service Level"::NURG then

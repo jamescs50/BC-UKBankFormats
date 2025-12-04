@@ -402,7 +402,20 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                             currXMLport.Skip();
                                     end;
                                 }
+                                textelement(CdtrAgtClrSysMmbId)
+                                {
+                                    XmlName = 'ClrSysMmbId';
+                                    fieldelement(CdtrAgtClrSysMmbIdMmbId; paymentexportdata."Recipient Bank Branch No.")
+                                    {
+                                        XmlName = 'MmbId';
 
+                                    }
+                                    trigger OnBeforePassVariable()
+                                    begin
+                                        if (paymentexportdata."Recipient Bank Branch No." = '') then
+                                            currXMLport.Skip();
+                                    end;
+                                }
                                 textelement(cdtragtfininstnidPstlAdr)
                                 {
                                     XmlName = 'PstlAdr';
@@ -491,7 +504,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
 
                                         trigger OnBeforePassField()
                                         begin
-                                            if BankRules.SupressIBAN() then
+                                            if (paymentexportdata."Recipient IBAN" = '') or BankRules.SupressIBAN() then
                                                 currXMLport.Skip();
                                         end;
                                     }
