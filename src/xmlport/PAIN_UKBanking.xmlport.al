@@ -325,6 +325,18 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                         currXMLport.Skip();
                                 end;
                             }
+                            textelement(DbtragtFininstnidClrSysMmbId)
+                            {
+                                XmlName = 'ClrSysMmbId';
+                                MaxOccurs = Once;
+                                MinOccurs = Zero;
+                                fieldelement(DbtragtFininstnidClrSysMmbId; PaymentExportDataGroup."Sender Bank Branch No.")
+                                {
+                                    XmlName = 'MmbId';
+                                    MaxOccurs = Once;
+                                    MinOccurs = Zero;
+                                }
+                            }
                         }
                     }
 
