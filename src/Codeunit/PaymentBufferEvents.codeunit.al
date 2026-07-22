@@ -1,12 +1,12 @@
 namespace kodoo.UKBanking;
 
-using Microsoft.Bank.Payment;
 using Microsoft.Bank.BankAccount;
-using Microsoft.Sales.Customer;
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Bank.DirectDebit;
+using Microsoft.Bank.Payment;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.HumanResources.Employee;
 using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 codeunit 70501 UKBank_PaymentBufferEvents
 {
 
@@ -18,6 +18,7 @@ codeunit 70501 UKBank_PaymentBufferEvents
         sender."Sender Bank Branch No." := BankAccount."Bank Branch No.";
         sender."Sender Bank Account No." := BankAccount."Bank Account No.";
         sender."Sender IBAN" := BankAccount.IBAN;
+        sender."Sender Bank Country/Region" := BankAccount."Country/Region Code";
     end;
 
     [EventSubscriber(ObjectType::Table, database::"Payment Export Data", OnAfterSetCustomerAsRecipient, '', false, false)]

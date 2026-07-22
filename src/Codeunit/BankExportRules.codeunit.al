@@ -1,9 +1,9 @@
 namespace kodoo.UKBanking;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Bank.Payment;
 using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Payment;
 using Microsoft.Bank.Setup;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Company;
 
 codeunit 70500 "Bank Export Rules"
@@ -52,13 +52,18 @@ codeunit 70500 "Bank Export Rules"
         exit(BankFormat <> BankFormat::HSBCSXML);
     end;
 
-    procedure GetdbtracctOthrId(paymentexportdatagroup: Record "Payment Export Data"): Text
+    procedure GetDbtrAcctOthrId(paymentexportdatagroup: Record "Payment Export Data"): Text
     begin
-        case BankFormat of
-            BankFormat::Lloyds:
+        case this.BankFormat of
+            this.BankFormat::Lloyds:
                 exit(StrSubstNo('%1-%2', paymentexportdatagroup."Sender Bank Branch No.", paymentexportdatagroup."Sender Bank Account No."));
-            BankFormat::HSBCcsv, BankFormat::HSBCSXML:
+            this.BankFormat::HSBCcsv:
                 exit(paymentexportdatagroup."Sender Bank Account No.");
+            this.BankFormat::HSBCSXML:
+                if paymentexportdatagroup."Service Level" = Enum::"Payment Service Level"::NURG then
+                    exit(paymentexportdatagroup."Sender Bank Account No.")  //only return bank account for uk payments
+                else
+                    exit('');
             else
                 exit('');
         end;
@@ -89,6 +94,10 @@ codeunit 70500 "Bank Export Rules"
             PaymentExportData."Recipient Bank Branch No." := FormatSortCodeAsNumeric(PaymentExportData."Recipient Bank Branch No.");
         if PaymentExportData."Sender Bank Branch No." <> '' then
             PaymentExportData."Sender Bank Branch No." := FormatSortCodeAsNumeric(PaymentExportData."Sender Bank Branch No.");
+        if PaymentExportData."Sender IBAN" <> '' then
+            PaymentExportData."Sender IBAN" := DelChr(PaymentExportData."Sender IBAN", '=');
+        if PaymentExportData."Recipient IBAN" <> '' then
+            PaymentExportData."Recipient IBAN" := DelChr(PaymentExportData."Recipient IBAN", '=');
     end;
 
     procedure FormatSortCodeAsNumeric(BranchNo: Text) SortCode: Code[6]

@@ -1,10 +1,9 @@
 namespace kodoo.UKBanking;
 
+using Microsoft.Bank.DirectDebit;
+using Microsoft.Bank.Payment;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Company;
-using Microsoft.Bank.Payment;
-using Microsoft.Bank.DirectDebit;
-using Microsoft.Bank.BankAccount;
 using System.Text;
 
 xmlport 70500 UKBanking_PAIN_001_001_03
@@ -281,7 +280,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
 
                                 trigger OnBeforePassField()
                                 begin
-                                    if BankRules.SupressIBAN() then
+                                    if this.BankRules.SupressIBAN() then
                                         currXMLport.Skip();
                                 end;
                             }
@@ -296,7 +295,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                 }
                                 trigger OnBeforePassVariable()
                                 begin
-                                    dbtracctOthrId := BankRules.GetdbtracctOthrId(PaymentExportDataGroup);
+                                    dbtracctOthrId := this.BankRules.GetDbtrAcctOthrId(PaymentExportDataGroup);
                                     if dbtracctOthrId = '' then
                                         currXMLport.Skip();
                                 end;
@@ -309,7 +308,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                         MinOccurs = Once;
                         MaxOccurs = Once;
 
-                        textelement(dbtragtfininstnid)
+                        textelement(DbtrAgtFinInstnId)
                         {
                             XmlName = 'FinInstnId';
                             MinOccurs = Once;
@@ -618,7 +617,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                     }
                     trigger OnAfterGetRecord()
                     begin
-                        BankRules.AdjustPaymentBuffer(PaymentExportDataGroup);
+                        this.BankRules.AdjustPaymentBuffer(PaymentExportDataGroup);
                     end;
                 }
 
@@ -660,16 +659,16 @@ xmlport 70500 UKBanking_PAIN_001_001_03
         if not paymentexportdata.FindSet() then
             Error(NoDataToExportErr);
 
-        InitPmtGroup();
+        this.InitPmtGroup();
         repeat
-            if IsNewGroup() then begin
-                InsertPmtGroup(PaymentGroupNo);
-                InitPmtGroup();
+            if this.IsNewGroup() then begin
+                this.InsertPmtGroup(PaymentGroupNo);
+                this.InitPmtGroup();
             end;
             PaymentExportDataGroup."Line No." += 1;
             PaymentExportDataGroup.Amount += paymentexportdata.Amount;
         until paymentexportdata.Next() = 0;
-        InsertPmtGroup(PaymentGroupNo);
+        this.InsertPmtGroup(PaymentGroupNo);
     end;
 
     local procedure IsNewGroup(): Boolean
