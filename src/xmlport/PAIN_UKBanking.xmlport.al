@@ -337,6 +337,22 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     MinOccurs = Zero;
                                 }
                             }
+                            textelement(dbtragtfininstnidPstlAdr)
+                            {
+                                XmlName = 'PstlAdr';
+
+                                fieldelement(dbtragtfininstnidPstlAdrCtry;
+                                paymentexportdatagroup."Sender Bank Country/Region")
+                                {
+                                    XmlName = 'Ctry';
+                                    MaxOccurs = Once;
+                                    MinOccurs = Once;
+                                }
+                                trigger OnBeforePassVariable()
+                                begin
+                                    if paymentexportdatagroup."Sender Bank Country/Region" = '' then currXMLport.Skip();
+                                end;
+                            }
                         }
                     }
 
@@ -540,43 +556,58 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                         textelement(RmtInf)
                         {
                             MinOccurs = Zero;
-
-                            textelement(Strd)
+                            textelement(RmtInfUstrd)
                             {
-                                MinOccurs = Zero;
+                                XmlName = 'Ustrd';
 
-                                textelement(CdtrRefInf)
-                                {
-                                    MinOccurs = Zero;
+                                trigger OnBeforePassVariable()
+                                begin
+                                    if paymentexportdata."Recipient Reference" <> '' then
+                                        RmtInfUstrd := Format(StrConvMgt.WindowsToASCII(paymentexportdata."Recipient Reference"), -18)
+                                    else
+                                        RmtInfUstrd := Format(StrConvMgt.WindowsToASCII(CompanyInformation.Name), -18);
+                                    if RmtInfUstrd = '' then
+                                        currXMLport.Skip();
+                                end;
 
-                                    textelement(Tp)
-                                    {
-                                        MinOccurs = Zero;
-
-                                        textelement(CdOrPrtry)
-                                        {
-                                            MinOccurs = Zero;
-
-                                            textelement(remittancetext)
-                                            {
-                                                XmlName = 'Prtry';
-                                                MinOccurs = Zero;
-                                            }
-                                        }
-                                    }
-                                }
                             }
 
-                            trigger OnBeforePassVariable()
-                            begin
-                                if paymentexportdata."Recipient Reference" <> '' then
-                                    remittancetext := Format(StrConvMgt.WindowsToASCII(paymentexportdata."Recipient Reference"), -18)
-                                else
-                                    remittancetext := Format(StrConvMgt.WindowsToASCII(CompanyInformation.Name), -18);
-
-                                if remittancetext = '' then
-                                    currXMLport.Skip();
-                            end;
+                            //textelement(Strd)
+                            //{
+                            //    MinOccurs = Zero;
+                            //
+                            //    textelement(CdtrRefInf)
+                            //    {
+                            //        MinOccurs = Zero;
+                            //
+                            //        textelement(Tp)
+                            //        {
+                            //            MinOccurs = Zero;
+                            //
+                            //            textelement(CdOrPrtry)
+                            //            {
+                            //                MinOccurs = Zero;
+                            //
+                            //                textelement(remittancetext)
+                            //                {
+                            //                    XmlName = 'Prtry';
+                            //                    MinOccurs = Zero;
+                            //                }
+                            //            }
+                            //        }
+                            //    }
+                            //}
+                            //
+                            //trigger OnBeforePassVariable()
+                            //begin
+                            //    if paymentexportdata."Recipient Reference" <> '' then
+                            //        remittancetext := Format(StrConvMgt.WindowsToASCII(paymentexportdata."Recipient Reference"), -18)
+                            //    else
+                            //        remittancetext := Format(StrConvMgt.WindowsToASCII(CompanyInformation.Name), -18);
+                            //
+                            //    if remittancetext = '' then
+                            //        currXMLport.Skip();
+                            //end;
                         }
 
                         //PaymentExportData
