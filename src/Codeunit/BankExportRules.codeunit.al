@@ -12,13 +12,16 @@ codeunit 70500 "Bank Export Rules"
     procedure SetExportFormat(var GenJnlLine: Record "Gen. Journal Line")
     var
         GenJnlLine2: Record "Gen. Journal Line";
+        GenJnlBatch: Record "Gen. Journal Batch";
         BankExpImpSetup: Record "Bank Export/Import Setup";
     begin
         GenJnlLine2.CopyFilters(GenJnlLine);
         GenJnlLine2.FindFirst();
-        BankAccount.Get(GenJnlLine2."Bal. Account No.");
+        GenJnlBatch.get(GenJnlLine2."Journal Template Name", GenJnlLine2."Journal Batch Name");
+        this.PaymentFileType := GenJnlBatch."Payment File Type";
+        this.BankAccount.Get(GenJnlLine2."Bal. Account No.");
         BankExpImpSetup.Get(BankAccount."Payment Export Format");
-        BankFormat := BankExpImpSetup."UK Bank File Format";
+        this.BankFormat := BankExpImpSetup."UK Bank File Format";
     end;
 
     procedure SuppressChargeBearer(): Boolean
@@ -26,25 +29,30 @@ codeunit 70500 "Bank Export Rules"
         exit(BankFormat in [BankFormat::Lloyds, BankFormat::HSBCcsv, BankFormat::HSBCSXML]);
     end;
 
-    procedure SupressIBAN(): Boolean
-    begin
-        exit(BankFormat in [BankFormat::Lloyds]);
-    end;
-
     procedure SuppressLocalInstrument(): Boolean
     begin
         exit(BankFormat <> BankFormat::Lloyds);
+    end;
+
+    procedure SuppressBICIBAN(): Boolean
+    begin
+        exit(this.PaymentFileType = enum::"Payment File Type"::BACS);
+    end;
+
+    procedure SuppressSortCodeAccountNo(): Boolean
+    begin
+        exit(this.PaymentFileType <> enum::"Payment File Type"::BACS);
     end;
 
     procedure OrganisationID(): Text[20]
     var
         CompanyInfo: Record "Company Information";
     begin
-        if BankAccount."Organisation ID" = '' then begin
+        if this.BankAccount."Organisation ID" = '' then begin
             CompanyInfo.get();
             exit(CompanyInfo."VAT Registration No.");
         end else
-            exit(BankAccount."Organisation ID");
+            exit(this.BankAccount."Organisation ID");
     end;
 
     procedure SuppressCdtTrfTxInfPmtTpInf(): Boolean
@@ -151,6 +159,7 @@ codeunit 70500 "Bank Export Rules"
     var
         BankAccount: Record "Bank Account";
         BankFormat: Enum "UK Bank File Format";
+        PaymentFileType: Enum "Payment File Type";
 
     [IntegrationEvent(true, false)]
     local procedure OnAfterAdjustCompanyInfo(var CompanyInfo: Record "Company Information")

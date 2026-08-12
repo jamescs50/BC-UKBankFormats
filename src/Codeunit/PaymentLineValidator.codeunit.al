@@ -33,7 +33,8 @@ codeunit 70502 UKBank_PaymentLineValidator
                     Customer.Get(GenJournalLine."Account No.");
 
                     if Customer.Name = '' then
-                        AddFieldEmptyError(GenJournalLine, Customer.TableCaption(), Customer.FieldCaption(Name), GenJournalLine."Account No.");
+                        this.AddFieldEmptyError(GenJournalLine, Customer.TableCaption(), Customer.FieldCaption(Name), GenJournalLine."Account No.");
+                    this.CheckRecipientAddress(GenJournalLine, Customer.Name, Customer.City, Customer."Post Code", Customer."Country/Region Code");
 
                     if GenJournalLine."Recipient Bank Account" <> '' then begin
                         CustomerBankAccount.Get(Customer."No.", GenJournalLine."Recipient Bank Account");
@@ -62,7 +63,9 @@ codeunit 70502 UKBank_PaymentLineValidator
                     Vendor.Get(GenJournalLine."Account No.");
 
                     if Vendor.Name = '' then
-                        AddFieldEmptyError(GenJournalLine, Vendor.TableCaption(), Vendor.FieldCaption(Name), GenJournalLine."Account No.");
+                        this.AddFieldEmptyError(GenJournalLine, Vendor.TableCaption(), Vendor.FieldCaption(Name), GenJournalLine."Account No.");
+
+                    this.CheckRecipientAddress(GenJournalLine, Vendor.Name, Vendor.City, Vendor."Post Code", Vendor."Country/Region Code");
 
                     if GenJnlBatch."Service Level" = "Payment Service Level"::NURG then begin
                         if GenJournalLine."Recipient Bank Account" <> '' then begin
@@ -94,7 +97,9 @@ codeunit 70502 UKBank_PaymentLineValidator
                     Employee.Get(GenJournalLine."Account No.");
 
                     if Employee.FullName() = '' then
-                        AddFieldEmptyError(GenJournalLine, Employee.TableCaption(), Employee.FieldCaption("First Name"), GenJournalLine."Account No.");
+                        this.AddFieldEmptyError(GenJournalLine, Employee.TableCaption(), Employee.FieldCaption("First Name"), GenJournalLine."Account No.");
+                    this.CheckRecipientAddress(GenJournalLine, Employee.FullName(), Employee.City, Employee."Post Code", Employee."Country/Region Code");
+
                     if GenJnlBatch."Service Level" = "Payment Service Level"::NURG then begin
                         if GenJournalLine."Recipient Bank Account" <> '' then begin
                             if Employee."Bank Branch No." = '' then
@@ -120,6 +125,24 @@ codeunit 70502 UKBank_PaymentLineValidator
         end;
 
         IsHandled := true;
+    end;
+
+
+    local procedure CheckRecipientAddress(var GenJournalLine: Record "Gen. Journal Line"; Name: text; City: Text; PostCode: text; CountryCode: text)
+    var
+        RecipientNameErr: label 'Recipient Name is missing';
+        RecipientCityErr: label 'Recipient City is missing';
+        RecipientPostCodeErr: label 'Recipient Post Code is missing';
+        RecipientCountryErr: label 'Recipient Country Code is missing';
+    begin
+        if Name = '' then
+            GenJournalLine.InsertPaymentFileError(RecipientNameErr);
+        if City = '' then
+            GenJournalLine.InsertPaymentFileError(RecipientCityErr);
+        if PostCode = '' then
+            GenJournalLine.InsertPaymentFileError(RecipientPostCodeErr);
+        if CountryCode = '' then
+            GenJournalLine.InsertPaymentFileError(RecipientCountryErr);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"SEPA CT-Check Line", OnAfterCheckGenJnlLine, '', false, false)]

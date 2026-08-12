@@ -13,6 +13,10 @@ pageextension 70501 "General Journal Batches" extends "General Journal Batches"
                 ApplicationArea = All;
                 Visible = false;
             }
+            field("Payment File Type"; Rec."Payment File Type")
+            {
+                ApplicationArea = All;
+            }
         }
     }
 }

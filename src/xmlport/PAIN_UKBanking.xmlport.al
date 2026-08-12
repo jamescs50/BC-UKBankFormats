@@ -112,6 +112,8 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     begin
                                         if CompanyInformation."SWIFT Code" = '' then
                                             currXMLport.Skip();
+                                        if this.BankRules.SuppressBICIBAN() then
+                                            currXMLport.Skip();
                                     end;
                                 }
                                 textelement(initgptyothrinitgpty)
@@ -235,6 +237,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                 end;
                             }
                         }
+
                         textelement(dbtrid)
                         {
                             XmlName = 'Id';
@@ -245,7 +248,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                 {
                                     trigger OnBeforePassField()
                                     begin
-                                        if PaymentExportDataGroup."Sender Bank BIC" = '' then
+                                        if this.BankRules.SuppressBICIBAN() then
                                             currXMLport.skip();
                                     end;
                                 }
@@ -256,6 +259,11 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     {
                                         XmlName = 'Id';
                                     }
+                                    trigger OnBeforePassVariable()
+                                    begin
+                                        if this.BankRules.SuppressSortCodeAccountNo() then
+                                            currXMLport.Skip();
+                                    end;
                                 }
                             }
 
@@ -280,7 +288,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
 
                                 trigger OnBeforePassField()
                                 begin
-                                    if this.BankRules.SupressIBAN() then
+                                    if this.BankRules.SuppressBICIBAN() then
                                         currXMLport.Skip();
                                 end;
                             }
@@ -295,6 +303,8 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                 }
                                 trigger OnBeforePassVariable()
                                 begin
+                                    if this.BankRules.SuppressSortCodeAccountNo() then
+                                        currXMLport.Skip();
                                     dbtracctOthrId := this.BankRules.GetDbtrAcctOthrId(PaymentExportDataGroup);
                                     if dbtracctOthrId = '' then
                                         currXMLport.Skip();
@@ -320,7 +330,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
 
                                 trigger OnBeforePassField()
                                 begin
-                                    if PaymentExportDataGroup."Sender Bank BIC" = '' then
+                                    if this.BankRules.SuppressBICIBAN() then
                                         currXMLport.Skip();
                                 end;
                             }
@@ -335,6 +345,11 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     MaxOccurs = Once;
                                     MinOccurs = Zero;
                                 }
+                                trigger OnBeforePassVariable()
+                                begin
+                                    if this.BankRules.SuppressSortCodeAccountNo() then
+                                        currXMLport.Skip();
+                                end;
                             }
                             textelement(dbtragtfininstnidPstlAdr)
                             {
@@ -380,21 +395,22 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                         {
                             XmlName = 'PmtTpInf';
 
-                            textelement(CdtTrfTxInfPmtTpInfSvcLvl)
-                            {
-                                XmlName = 'SvcLvl';
-                                textelement(CdtTrfTxInfPmtTpInfSvcLvlCd)
-                                {
-                                    XmlName = 'Cd';
-
-                                }
-                                trigger OnBeforePassVariable()
-                                begin
-                                    CdtTrfTxInfPmtTpInfSvcLvlCd := BankRules.GetServiceLevelCode(PaymentExportDataGroup);
-                                    if CdtTrfTxInfPmtTpInfSvcLvlCd = '' then
-                                        currXMLport.Skip();
-                                end;
-                            }
+                            //Removed as HSBC requies *only* the debtor SvcLvl tag 
+                            //textelement(CdtTrfTxInfPmtTpInfSvcLvl)
+                            //{
+                            //    XmlName = 'SvcLvl';
+                            //    textelement(CdtTrfTxInfPmtTpInfSvcLvlCd)
+                            //    {
+                            //        XmlName = 'Cd';
+                            //
+                            //    }
+                            //    trigger OnBeforePassVariable()
+                            //    begin
+                            //        CdtTrfTxInfPmtTpInfSvcLvlCd := this.BankRules.GetServiceLevelCode(PaymentExportDataGroup);
+                            //        if CdtTrfTxInfPmtTpInfSvcLvlCd = '' then
+                            //            currXMLport.Skip();
+                            //    end;
+                            //}
 
 
 
@@ -425,7 +441,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     FieldValidate = Yes;
                                     trigger OnBeforePassField()
                                     begin
-                                        if (paymentexportdata."Recipient Bank BIC" = '') then
+                                        if this.BankRules.SuppressBICIBAN() then
                                             currXMLport.Skip();
                                     end;
                                 }
@@ -439,7 +455,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     }
                                     trigger OnBeforePassVariable()
                                     begin
-                                        if (paymentexportdata."Recipient Bank Branch No." = '') then
+                                        if this.BankRules.SuppressSortCodeAccountNo() then
                                             currXMLport.Skip();
                                     end;
                                 }
@@ -468,8 +484,9 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                             {
                                 XmlName = 'PstlAdr';
 
-                                fieldelement(StrtNm; paymentexportdata."Recipient Address")
+                                fieldelement(Cdtr_PstlAr_StrtNm; paymentexportdata."Recipient Address")
                                 {
+                                    XmlName = 'StrtNm';
 
                                     trigger OnBeforePassField()
                                     begin
@@ -478,27 +495,38 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     end;
                                 }
 
-                                fieldelement(PstCd; paymentexportdata."Recipient Post Code")
+                                fieldelement(Cdtr_PstlAr_PstCd; paymentexportdata."Recipient Post Code")
                                 {
+                                    XmlName = 'PstCd';
+
                                     trigger OnBeforePassField()
                                     begin
                                         if paymentexportdata."Recipient Post Code" = '' then
                                             currXMLport.Skip();
                                     end;
                                 }
-
-                                fieldelement(TwnNm; paymentexportdata."Recipient City")
+                                fieldelement(Cdtr_PstlAr_TwnNm; paymentexportdata."Recipient City")
                                 {
-
+                                    XmlName = 'TwnNm';
                                     trigger OnBeforePassField()
                                     begin
                                         if paymentexportdata."Recipient City" = '' then
                                             currXMLport.Skip();
                                     end;
                                 }
-
-                                fieldelement(Ctry; paymentexportdata."Recipient Country/Region Code")
+                                fieldelement(Cdtr_PstlAr_CtrySubDvsn; paymentexportdata."Recipient County")
                                 {
+                                    XmlName = 'CtrySubDvsn';
+
+                                    trigger OnBeforePassField()
+                                    begin
+                                        if paymentexportdata."Recipient County" = '' then
+                                            currXMLport.Skip();
+                                    end;
+                                }
+                                fieldelement(Cdtr_PstlAr_Ctry; paymentexportdata."Recipient Country/Region Code")
+                                {
+                                    XmlName = 'Ctry';
                                     trigger OnBeforePassField()
                                     begin
                                         if paymentexportdata."Recipient Country/Region Code" = '' then
@@ -532,7 +560,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
 
                                     trigger OnBeforePassField()
                                     begin
-                                        if (paymentexportdata."Recipient IBAN" = '') or BankRules.SupressIBAN() then
+                                        if (paymentexportdata."Recipient IBAN" = '') or BankRules.SuppressBICIBAN() then
                                             currXMLport.Skip();
                                     end;
                                 }
@@ -545,7 +573,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     }
                                     trigger OnBeforePassVariable()
                                     begin
-                                        if paymentexportdata."Recipient Bank Acc. No." = '' then
+                                        if this.BankRules.SuppressSortCodeAccountNo() then
                                             currXMLport.Skip();
                                     end;
                                 }
