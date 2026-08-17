@@ -238,42 +238,44 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                             }
                         }
 
-                        textelement(dbtrid)
-                        {
-                            XmlName = 'Id';
-                            textelement(dbtrorgid)
-                            {
-                                XmlName = 'OrgId';
-                                fieldelement(BICOrBEI; PaymentExportDataGroup."Sender Bank BIC")
-                                {
-                                    trigger OnBeforePassField()
-                                    begin
-                                        if this.BankRules.SuppressBICIBAN() then
-                                            currXMLport.skip();
-                                    end;
-                                }
-                                textelement(dbtrorgidOthr)
-                                {
-                                    XmlName = 'Othr';
-                                    fieldelement(DbtrOrgIdOthrId; PaymentExportDataGroup."Sender Bank Branch No.")
-                                    {
-                                        XmlName = 'Id';
-                                    }
-                                    trigger OnBeforePassVariable()
-                                    begin
-                                        if this.BankRules.SuppressSortCodeAccountNo() then
-                                            currXMLport.Skip();
-                                    end;
-                                }
-                            }
-
-                            trigger OnBeforePassVariable()
-                            begin
-                                if (PaymentExportDataGroup."Sender Bank BIC" = '') and
-                                (PaymentExportDataGroup."Sender Bank Branch No." = '') then
-                                    currXMLport.Skip();
-                            end;
-                        }
+                        //removed as HSBC BACS uses this section for BACS SUN ref and cannot contain bank sort code
+                        /*textelement(dbtrid)
+                        //{
+                        //    XmlName = 'Id';
+                        //    textelement(dbtrorgid)
+                        //    {
+                        //        XmlName = 'OrgId';
+                        //        fieldelement(BICOrBEI; PaymentExportDataGroup."Sender Bank BIC")
+                        //        {
+                        //            trigger OnBeforePassField()
+                        //            begin
+                        //                if this.BankRules.SuppressBICIBAN() then
+                        //                    currXMLport.skip();
+                        //            end;
+                        //        }
+                        //        textelement(dbtrorgidOthr)
+                        //        {
+                        //            XmlName = 'Othr';
+                        //            fieldelement(DbtrOrgIdOthrId; PaymentExportDataGroup."Sender Bank Branch No.")
+                        //            {
+                        //                XmlName = 'Id';
+                        //            }
+                        //            trigger OnBeforePassVariable()
+                        //            begin
+                        //                if this.BankRules.SuppressSortCodeAccountNo() then
+                        //                    currXMLport.Skip();
+                        //            end;
+                        //        }
+                        //    }
+                        //
+                        //    trigger OnBeforePassVariable()
+                        //    begin
+                        //        if (PaymentExportDataGroup."Sender Bank BIC" = '') and
+                        //        (PaymentExportDataGroup."Sender Bank Branch No." = '') then
+                        //            currXMLport.Skip();
+                        //    end;
+                        //)
+                        */
                     }
                     textelement(DbtrAcct)
                     {
