@@ -55,6 +55,11 @@ codeunit 70500 "Bank Export Rules"
             exit(this.BankAccount."Organisation ID");
     end;
 
+    procedure ServiceUserNumber(): code[6]
+    begin
+        exit(this.BankAccount."BACS Id");
+    end;
+
     procedure SuppressCdtTrfTxInfPmtTpInf(): Boolean
     begin
         exit(BankFormat <> BankFormat::HSBCSXML);

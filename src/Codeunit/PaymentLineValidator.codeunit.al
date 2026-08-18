@@ -2,6 +2,7 @@ namespace kodoo.UKBanking;
 using Microsoft.Bank.DirectDebit;
 using Microsoft.HumanResources.Employee;
 using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Sales.Customer;
 using Microsoft.Finance.GeneralLedger.Journal;
 
@@ -148,17 +149,25 @@ codeunit 70502 UKBank_PaymentLineValidator
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"SEPA CT-Check Line", OnAfterCheckGenJnlLine, '', false, false)]
     local procedure SEPACTCheckLine_OnAfterCheckGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
     var
+        GLSetup: Record "General Ledger Setup";
         GenJnlBatch: Record "Gen. Journal Batch";
         BankRules: Codeunit "Bank Export Rules";
-        CurrencyPaymentErr: Label 'Currency payments can only be made in an international payments batch.';
+        CurrencyPaymentErr: Label 'Currency payments cannot be made in a BACS payments batch.';
     begin
         if BankRules.UKBankType(GenJournalLine) = "UK Bank File Format"::none then
             exit;
 
-        if GenJournalLine."Currency Code" in ['', 'GBP'] then
+        if GenJournalLine."Currency Code" = '' then begin
+            GLSetup.SetLoadFields("LCY Code");
+            GLSetup.Get();
+            GenJournalLine."Currency Code" := GLSetup."LCY Code";
+        end;
+
+        if GenJournalLine."Currency Code" = 'GBP' then
             exit;
         GenJnlBatch.Get(GenJournalLine."Journal Template Name", GenJournalLine."Journal Batch Name");
-        if GenJnlBatch."Service Level" = "Payment Service Level"::NURG then
+        //if GenJnlBatch."Service Level" = "Payment Service Level"::NURG then
+        if GenJnlBatch."Payment File Type" = enum::"Payment File Type"::BACS then
             GenJournalLine.InsertPaymentFileError(CurrencyPaymentErr);
     end;
 

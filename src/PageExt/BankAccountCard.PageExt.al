@@ -12,6 +12,10 @@ pageextension 70502 "Bank Account Card" extends "Bank Account Card"
             {
                 ApplicationArea = All;
             }
+            field("BACS Id"; Rec."BACS Id")
+            {
+                ApplicationArea = All;
+            }
         }
     }
 }

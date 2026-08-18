@@ -124,7 +124,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                         XmlName = 'Id';
                                         trigger OnBeforePassVariable()
                                         begin
-                                            GrpHdrInitgPtyIdOrgIdOthrId := BankRules.OrganisationID();
+                                            GrpHdrInitgPtyIdOrgIdOthrId := this.BankRules.OrganisationID();
                                         end;
                                     }
                                 }
@@ -190,6 +190,13 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     currXMLport.Skip();
                             end;
                         }
+                        trigger OnBeforePassVariable()
+                        begin
+                            ScvLvlCd := this.BankRules.GetServiceLevelCode(PaymentExportDataGroup);
+                            if (ScvLvlCd = '') and this.BankRules.SuppressLocalInstrument() then
+                                currXMLport.Skip();
+                        end;
+
                     }
 
                     fieldelement(ReqdExctnDt; PaymentExportDataGroup."Transfer Date") { }
@@ -238,44 +245,43 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                             }
                         }
 
-                        //removed as HSBC BACS uses this section for BACS SUN ref and cannot contain bank sort code
-                        /*textelement(dbtrid)
-                        //{
-                        //    XmlName = 'Id';
-                        //    textelement(dbtrorgid)
-                        //    {
-                        //        XmlName = 'OrgId';
-                        //        fieldelement(BICOrBEI; PaymentExportDataGroup."Sender Bank BIC")
-                        //        {
-                        //            trigger OnBeforePassField()
-                        //            begin
-                        //                if this.BankRules.SuppressBICIBAN() then
-                        //                    currXMLport.skip();
-                        //            end;
-                        //        }
-                        //        textelement(dbtrorgidOthr)
-                        //        {
-                        //            XmlName = 'Othr';
-                        //            fieldelement(DbtrOrgIdOthrId; PaymentExportDataGroup."Sender Bank Branch No.")
-                        //            {
-                        //                XmlName = 'Id';
-                        //            }
-                        //            trigger OnBeforePassVariable()
-                        //            begin
-                        //                if this.BankRules.SuppressSortCodeAccountNo() then
-                        //                    currXMLport.Skip();
-                        //            end;
-                        //        }
-                        //    }
-                        //
-                        //    trigger OnBeforePassVariable()
-                        //    begin
-                        //        if (PaymentExportDataGroup."Sender Bank BIC" = '') and
-                        //        (PaymentExportDataGroup."Sender Bank Branch No." = '') then
-                        //            currXMLport.Skip();
-                        //    end;
-                        //)
-                        */
+                        //HSBC BACS uses this section for BACS SUN ref and cannot contain bank sort code
+                        textelement(dbtrid)
+                        {
+                            XmlName = 'Id';
+                            textelement(dbtrorgid)
+                            {
+                                XmlName = 'OrgId';
+                                //fieldelement(BICOrBEI; PaymentExportDataGroup."Sender Bank BIC")
+                                //{
+                                //    trigger OnBeforePassField()
+                                //    begin
+                                //        if this.BankRules.SuppressBICIBAN() then
+                                //            currXMLport.skip();
+                                //    end;
+                                //}
+                                textelement(dbtrorgidOthr)
+                                {
+                                    XmlName = 'Othr';
+                                    textelement(DbtrOrgIdOthrId)
+                                    {
+                                        XmlName = 'Id';
+                                    }
+                                    trigger OnBeforePassVariable()
+                                    begin
+                                        if DbtrOrgIdOthrId = '' then
+                                            currXMLport.Skip();
+                                    end;
+                                }
+                            }
+                            trigger OnBeforePassVariable()
+                            begin
+                                DbtrOrgIdOthrId := BankRules.ServiceUserNumber();
+                                if (DbtrOrgIdOthrId = '') then
+                                    currXMLport.Skip();
+                            end;
+                        }
+
                     }
                     textelement(DbtrAcct)
                     {
