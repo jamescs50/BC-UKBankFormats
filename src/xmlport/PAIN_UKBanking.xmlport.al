@@ -581,7 +581,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                                     }
                                     trigger OnBeforePassVariable()
                                     begin
-                                        if this.BankRules.SuppressSortCodeAccountNo() then
+                                        if this.BankRules.SuppressSortCodeAccountNo() and (paymentexportdata."Recipient IBAN" <> '') then
                                             currXMLport.Skip();
                                     end;
                                 }
