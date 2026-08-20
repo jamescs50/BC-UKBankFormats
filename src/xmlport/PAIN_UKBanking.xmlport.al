@@ -106,16 +106,18 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                             textelement(initgptyorgid)
                             {
                                 XmlName = 'OrgId';
-                                fieldelement(BICOrBEI; CompanyInformation."SWIFT Code")
-                                {
-                                    trigger OnBeforePassField()
-                                    begin
-                                        if CompanyInformation."SWIFT Code" = '' then
-                                            currXMLport.Skip();
-                                        if this.BankRules.SuppressBICIBAN() then
-                                            currXMLport.Skip();
-                                    end;
-                                }
+                                //BIC / SWIFT will generally be the ID of the companie's bank - not the company. This caused a 
+                                //failure on HSBC international payments.
+                                //fieldelement(BICOrBEI; CompanyInformation."SWIFT Code")
+                                //{
+                                //    trigger OnBeforePassField()
+                                //    begin
+                                //        if CompanyInformation."SWIFT Code" = '' then
+                                //            currXMLport.Skip();
+                                //        if this.BankRules.SuppressBICIBAN() then
+                                //            currXMLport.Skip();
+                                //    end;
+                                //}
                                 textelement(initgptyothrinitgpty)
                                 {
                                     XmlName = 'Othr';
