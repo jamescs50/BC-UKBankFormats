@@ -35,7 +35,7 @@ codeunit 70501 UKBank_PaymentBufferEvents
     [EventSubscriber(ObjectType::Table, database::"Payment Export Data", OnAfterSetEmployeeAsRecipient, '', false, false)]
     local procedure PaymentExportData_OnAfterSetEmployeeAsRecipient(var sender: Record "Payment Export Data"; Employee: Record Employee)
     begin
-        if BankRules.UKBankType(sender) = "UK Bank File Format"::None then
+        if this.BankRules.UKBankType(sender) = "UK Bank File Format"::None then
             exit;
 
         sender."Recipient Bank Branch No." := Employee."Bank Branch No.";
@@ -46,12 +46,16 @@ codeunit 70501 UKBank_PaymentBufferEvents
     [EventSubscriber(ObjectType::Table, database::"Payment Export Data", OnAfterSetVendorAsRecipient, '', false, false)]
     local procedure PaymentExportData_OnAfterSetVendorAsRecipient(var PaymentExportData: Record "Payment Export Data"; var Vendor: Record Vendor; var VendorBankAccount: Record "Vendor Bank Account");
     begin
-        if BankRules.UKBankType(PaymentExportData) = "UK Bank File Format"::None then
+        if VendorBankAccount."Account Name" <> '' then
+            PaymentExportData."Recipient Name" := VendorBankAccount."Account Name";
+        PaymentExportData."Intermediary Agent Name" := VendorBankAccount."Intermediary Agent Name";
+        PaymentExportData."Intermediary SWIFT Code" := VendorBankAccount."Intermediary SWIFT Code";
+        if this.BankRules.UKBankType(PaymentExportData) = "UK Bank File Format"::None then
             exit;
-
         PaymentExportData."Recipient Bank Branch No." := VendorBankAccount."Bank Branch No.";
         PaymentExportData."Recipient Bank Acc. No." := VendorBankAccount."Bank Account No.";
         PaymentExportData."Recipient IBAN" := VendorBankAccount.IBAN;
+
     end;
 
     [EventSubscriber(ObjectType::Table, database::"Payment Export Data", OnAfterSetBankAsRecipient, '', false, false)]

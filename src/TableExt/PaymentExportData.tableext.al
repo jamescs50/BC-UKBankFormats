@@ -45,5 +45,20 @@ tableextension 70500 "Payment Export Data" extends "Payment Export Data"
             DataClassification = CustomerContent;
             AllowInCustomizations = AsReadWrite;
         }
+        field(70510; "Intermediary Agent Name"; text[100])
+        {
+            Caption = 'Intermediary Agent Name';
+            ToolTip = 'If the transaction requires an intermediary bank enter the name of the intermediary here.';
+            DataClassification = CustomerContent;
+            AllowInCustomizations = AsReadWrite;
+        }
+        field(70511; "Intermediary SWIFT Code"; Code[20])
+        {
+            Caption = 'Intermediary Agent SWIFT (BIC) Code';
+            ToolTip = 'If the transaction requires an intermediary bank enter the SWIFT (BIC) code of the intermediary here.';
+            DataClassification = CustomerContent;
+            AllowInCustomizations = AsReadWrite;
+        }
+
     }
 }

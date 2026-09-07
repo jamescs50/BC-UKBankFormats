@@ -106,7 +106,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                             textelement(initgptyorgid)
                             {
                                 XmlName = 'OrgId';
-                                //BIC / SWIFT will generally be the ID of the companie's bank - not the company. This caused a 
+                                //BIC / SWIFT will generally be the ID of the company's bank - not the company. This caused a 
                                 //failure on HSBC international payments.
                                 //fieldelement(BICOrBEI; CompanyInformation."SWIFT Code")
                                 //{
@@ -440,6 +440,28 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                             }
                         }
 
+                        textelement(IntrmyAgt1)
+                        {
+                            textelement(IntrmyAgt1FinInstnId)
+                            {
+                                XmlName = 'FinInstnId';
+                                fieldelement(IntrmyAgt1FinInstnIdBIC; paymentexportdata."Intermediary SWIFT Code")
+                                {
+                                    XmlName = 'BIC';
+                                }
+                                fieldelement(IntrmyAgt1FinInstnIdNm; paymentexportdata."Intermediary Agent Name")
+                                {
+                                    XmlName = 'Nm';
+                                }
+                            }
+
+                            trigger OnBeforePassVariable()
+                            begin
+                                if paymentexportdata."Intermediary SWIFT Code" = '' then
+                                    currXMLport.Skip();
+                            end;
+                        }
+
                         textelement(CdtrAgt)
                         {
                             textelement(cdtragtfininstnid)
@@ -486,7 +508,7 @@ xmlport 70500 UKBanking_PAIN_001_001_03
                             {
                                 trigger OnBeforePassField()
                                 begin
-                                    paymentexportdata."Recipient Name" := Format(StrConvMgt.WindowsToASCII(paymentexportdata."Recipient Name"), -18);
+                                    paymentexportdata."Recipient Name" := Format(StrConvMgt.WindowsToASCII(paymentexportdata."Recipient Name"), -140);
                                 end;
                             }
 
